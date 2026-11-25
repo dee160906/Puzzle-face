@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Puzzle Muka Emosi</title>
+    <!-- Menggunakan fon Fredoka untuk gaya kartun bulat yang mesra kanak-kanak -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Pemboleh ubah warna pastel dan gaya asas */
+        :root {
+            --bg-cream: #FFFDF7;
+            --pastel-blue: #A2D2FF;
+            --pastel-blue-dark: #5FA8EB;
+            --pastel-pink: #FFAFCC;
+            --pastel-pink-dark: #F279A6;
+            --pastel-yellow: #FDE49E;
+            --pastel-yellow-dark: #F5C342;
+            --pastel-green: #B9FBC0;
+            --pastel-green-dark: #58D66C;
+            --pastel-purple: #CDB4DB;
+            --pastel-purple-dark: #9D79B3;
+            --text-dark: #3D3B40;
+            --skin-tone: #FFE0BD;
+            --skin-shadow: #F5C69C;
+            --hair-color: #4A3525;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--bg-cream);
+            background-image: radial-gradient(#E2ECE9 2px, transparent 2px);
+            background-size: 28px 28px;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pengurusan Skrin */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            min-height: 100vh;
+            padding: 16px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Tipografi Besar & Ceria */
+        h1 {
+            font-size: clamp(2.4rem, 7vw, 4rem);
+            text-align: center;
+            margin: 10px 0 20px;
+            color: #FF6B6B;
+            text-shadow: 3px 3px 0px #FFE66D, 5px 5px 0px rgba(0,0,0,0.08);
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: clamp(1.6rem, 4.5vw, 2.5rem);
+            text-align: center;
+            margin: 8px 0 20px;
+            color: var(--text-dark);
+        }
+
+        /* Butang Mesra Kanak-Kanak (Besar & Efek 3D Kartun) */
+        .btn-cartoon {
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+            font-weight: 700;
+            padding: 16px 36px;
+            border: 4px solid #FFF;
+            border-radius: 30px;
+            cursor: pointer;
+            color: var(--text-dark);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            touch-action: manipulation;
+        }
+
+        .btn-cartoon:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.15) !important;
+        }
+
+        .btn-start {
+            background-color: var(--pastel-yellow);
+            box-shadow: 0 8px 0 var(--pastel-yellow-dark), 0 12px 20px rgba(0,0,0,0.1);
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            padding: 20px 54px;
+        }
+
+        .btn-done {
+            background-color: var(--pastel-green);
+            box-shadow: 0 7px 0 var(--pastel-green-dark), 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-reset {
+            background-color: #FFD6A5;
+            box-shadow: 0 7px 0 #F4A261, 0 10px 15px rgba(0,0,0,0.1);
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            padding: 14px 24px;
+        }
+
+        .btn-yes {
+            background-color: var(--pastel-green);
+            box-shadow: 0 7px 0 var(--pastel-green-dark);
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .btn-no {
+            background-color: var(--pastel-pink);
+            box-shadow: 0 7px 0 var(--pastel-pink-dark);
+            width: 100%;
+            max-width: 280px;
+        }
+
+        /* Maskot Bubu pada Skrin Utama */
+        .bubu-mascot {
+            width: 170px;
+            height: 170px;
+            margin-bottom: 10px;
+            animation: floatBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes floatBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Kad Pemilihan Jantina */
+        .gender-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .gender-card {
+            background: #FFFFFF;
+            border-radius: 32px;
+            padding: 24px;
+            width: 230px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            border: 5px solid transparent;
+            transition: transform 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .gender-card.boy {
+            background-color: #EBF5FF;
+            border-color: var(--pastel-blue);
+            box-shadow: 0 9px 0 var(--pastel-blue-dark);
+        }
+
+        .gender-card.girl {
+            background-color: #FFF0F6;
+            border-color: var(--pastel-pink);
+            box-shadow: 0 9px 0 var(--pastel-pink-dark);
+        }
+
+        .gender-card:active {
+            transform: translateY(6px);
+        }
+
+        .gender-card span {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Susun Atur Permainan Utama */
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .instruction-pill {
+            background: #FFFFFF;
+            border: 3px solid var(--pastel-purple);
+            border-radius: 24px;
+            padding: 10px 20px;
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+        }
+
+        .game-workspace {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .game-workspace {
+                flex-direction: row;
+                justify-content: center;
+                align-items: stretch;
+            }
+        }
+
+        /* Kanvas Muka */
+        .face-stage {
+            background: #FFFFFF;
+            border: 5px solid var(--pastel-blue);
+            border-radius: 36px;
+            width: 100%;
+            max-width: 340px;
+            height: 360px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 0 rgba(162, 210, 255, 0.5);
+            flex-shrink: 0;
+        }
+
+        /* Zon Drop pada Muka */
+        .drop-zone {
+            position: absolute;
+            border: 3px dashed rgba(61, 59, 64, 0.25);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+        }
+
+        .drop-zone.highlight {
+            background-color: rgba(253, 228, 158, 0.55);
+            border-color: var(--pastel-yellow-dark);
+            transform: scale(1.05);
+        }
+
+        .drop-zone.filled {
+            border-color: transparent;
+            background-color: transparent;
+        }
+
+        /* Kedudukan tepat bahagian wajah di atas SVG kepala (300x320) */
+        #zone-brows {
+            top: 98px;
+            width: 165px;
+            height: 44px;
+            z-index: 10;
+        }
+
+        #zone-eyes {
+            top: 136px;
+            width: 165px;
+            height: 54px;
+            z-index: 10;
+        }
+
+        #zone-mouth {
+            top: 215px;
+            width: 120px;
+            height: 58px;
+            z-index: 10;
+        }
+
+        .zone-hint {
+            font-size: 0.85rem;
+            color: rgba(61, 59, 64, 0.45);
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .drop-zone.filled .zone-hint {
+            display: none;
+        }
+
+        /* Dulang Bahagian Puzzle (Kening, Mata, Mulut) */
+        .parts-tray {
+            background: #FFFFFF;
+            border: 5px solid var(--pastel-yellow);
+            border-radius: 32px;
+            padding: 14px;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 8px 0 rgba(253, 228, 158, 0.6);
+        }
+
+        .part-category {
+            background: #FAF8F5;
+            border-radius: 20px;
+            padding: 8px 12px;
+        }
+
+        .category-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #7A7580;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .parts-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .draggable-item {
+            background: #FFFFFF;
+            border: 3px solid #EAE6DF;
+            border-radius: 16px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            touch-action: none;
+            transition: transform 0.15s, border-color 0.15s;
+            padding: 4px;
+        }
+
+        .draggable-item:hover {
+            border-color: var(--pastel-blue);
+            transform: scale(1.04);
+        }
+
+        .draggable-item svg {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Klon semasa diseret dengan jari/tetikus */
+        .dragging-clone {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%) scale(1.25);
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
+        }
+
+        /* Item yang telah diletakkan di muka */
+        .placed-part {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .placed-part svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); }
+            100% { transform: scale(1); }
+        }
+
+        .game-footer {
+            margin-top: 16px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        /* Modal / Kotak Mesej Mesra */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(61, 59, 64, 0.55);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-box {
+            background: #FFFFFF;
+            border: 6px solid var(--pastel-purple);
+            border-radius: 36px;
+            padding: 28px 24px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 12px 0 var(--pastel-purple-dark), 0 20px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .emotion-highlight {
+            display: inline-block;
+            background: var(--pastel-yellow);
+            padding: 4px 16px;
+            border-radius: 16px;
+            color: #D9534F;
+            font-weight: 700;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .bubu-comfort-msg {
+            font-size: clamp(1.35rem, 4vw, 1.75rem);
+            line-height: 1.4;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== SKRIN 1: HALAMAN UTAMA ==================== -->
+    <section id="screen-start" class="screen active">
+        <!-- Maskot Bubu yang comel dan mesra -->
+        <svg class="bubu-mascot" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="105" r="75" fill="#CDB4DB" stroke="#9D79B3" stroke-width="6"/>
+            <!-- Telinga Bubu -->
+            <circle cx="42" cy="48" r="22" fill="#CDB4DB" stroke="#9D79B3" stroke-width="6"/>
+            <circle cx="158" cy="48" r="22" fill="#CDB4DB" stroke="#9D79B3" stroke-width="6"/>
+            <circle cx="42" cy="48" r="10" fill="#FFAFCC"/>
+            <circle cx="158" cy="48" r="10" fill="#FFAFCC"/>
+            <!-- Muka dalam -->
+            <ellipse cx="100" cy="115" rx="56" ry="48" fill="#FFFDF7"/>
+            <!-- Mata ceria -->
+            <circle cx="76" cy="98" r="9" fill="#3D3B40"/>
+            <circle cx="73" cy="95" r="3" fill="#FFF"/>
+            <circle cx="124" cy="98" r="9" fill="#3D3B40"/>
+            <circle cx="121" cy="95" r="3" fill="#FFF"/>
+            <!-- Pipi merah jambu -->
+            <ellipse cx="62" cy="114" rx="10" ry="6" fill="#FFAFCC" opacity="0.8"/>
+            <ellipse cx="138" cy="114" rx="10" ry="6" fill="#FFAFCC" opacity="0.8"/>
+            <!-- Senyuman mesra -->
+            <path d="M 85 118 Q 100 134 115 118" fill="none" stroke="#3D3B40" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+
+        <h1>PUZZLE<br>MUKA EMOSI</h1>
+        <p style="font-size: 1.3rem; text-align: center; max-width: 420px; margin-bottom: 28px; color: #666;">
+            Mari bina wajah dan kongsikan perasaan kamu bersama Bubu!
+        </p>
+
+        <button class="btn-cartoon btn-start" onclick="goToGenderScreen()">
+            <span>▶</span> MULA
+        </button>
+    </section>
+
+    <!-- ==================== SKRIN 2: PILIH JANTINA ==================== -->
+    <section id="screen-gender" class="screen">
+        <h2>Siapa nama kamu? Pilih watak kamu:</h2>
+        
+        <div class="gender-grid">
+            <!-- Kad Lelaki -->
+            <div class="gender-card boy" onclick="selectGender('boy')">
+                <svg width="140" height="140" viewBox="0 0 200 200">
+                    <!-- Telinga -->
+                    <circle cx="38" cy="108" r="16" fill="#FFE0BD" stroke="#3D3B40" stroke-width="4"/>
+                    <circle cx="162" cy="108" r="16" fill="#FFE0BD" stroke="#3D3B40" stroke-width="4"/>
+                    <!-- Kepala -->
+                    <rect x="44" y="42" width="112" height="130" rx="54" fill="#FFE0BD" stroke="#3D3B40" stroke-width="4"/>
+                    <!-- Rambut Lelaki -->
+                    <path d="M 42 90 C 38 35, 162 35, 158 90 C 145 65, 120 72, 100 62 C 80 72, 55 65, 42 90 Z" fill="#4A3525" stroke="#3D3B40" stroke-width="4" stroke-linejoin="round"/>
+                    <!-- Mata & Senyum -->
+                    <circle cx="78" cy="105" r="7" fill="#3D3B40"/>
+                    <circle cx="122" cy="105" r="7" fill="#3D3B40"/>
+                    <path d="M 86 132 Q 100 144 114 132" fill="none" stroke="#3D3B40" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+                <span>LELAKI</span>
+            </div>
+
+            <!-- Kad Perempuan -->
+            <div class="gender-card girl" onclick="selectGender('girl')">
+                <svg width="140" height="140" viewBox="0 0 200 200">
+                    <!-- Tocang Rambut Kiri & Kanan -->
+                    <circle cx="32" cy="70" r="24" fill="#4A3525" stroke="#3D3B40" stroke-width="4"/>
+                    <circle cx="168" cy="70" r="24" fill="#4A3525" stroke="#3D3B40" stroke-width="4"/>
+                    <!-- Getah Rambut Pastel -->
+                    <circle cx="48" cy="78" r="8" fill="#FFAFCC" stroke="#3D3B40" stroke-width="3"/>
+                    <circle cx="152" cy="78" r="8" fill="#FFAFCC" stroke="#3D3B40" stroke-width="3"/>
+                    <!-- Telinga -->
+                    <circle cx="38" cy="108" r="16" fill="#FFE0BD" stroke="#3D3B40" stroke-width="4"/>
+                    <circle cx="162" cy="108" r="16" fill="#FFE0BD" stroke="#3D3B40" stroke-width="4"/>
+                    <!-- Kepala -->
+                    <rect x="44" y="42" width="112" height="130" rx="54" fill="#FFE0BD" stroke="#3D3B40" stroke-width="4"/>
+                    <!-- Rambut Depan (Bangs) -->
+                    <path d="M 42 92 C 40 32, 160 32, 158 92 C 135 72, 115 78, 100 66 C 85 78, 65 72, 42 92 Z" fill="#4A3525" stroke="#3D3B40" stroke-width="4" stroke-linejoin="round"/>
+                    <!-- Mata & Senyum -->
+                    <circle cx="78" cy="105" r="7" fill="#3D3B40"/>
+                    <circle cx="122" cy="105" r="7" fill="#3D3B40"/>
+                    <path d="M 86 132 Q 100 144 114 132" fill="none" stroke="#3D3B40" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+                <span>PEREMPUAN</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SKRIN 3: BINA PUZZLE MUKA ==================== -->
+    <section id="screen-game" class="screen">
+        <div class="game-header">
+            <button class="btn-cartoon btn-reset" onclick="goToGenderScreen()" title="Tukar Watak">
+                ⬅ Watak
+            </button>
+            <div class="instruction-pill">
+                Tarik kening, mata & mulut ke muka!
+            </div>
+        </div>
+
+        <div class="game-workspace">
+            <!-- Kawasan Muka Kosong (Dengan Rambut, Telinga, Hidung) -->
+            <div class="face-stage" id="face-stage">
+                <!-- SVG Kepala Asas akan dirender melalui JS berdasarkan jantina -->
+                <div id="base-head-container" style="width: 300px; height: 320px;"></div>
+
+                <!-- Zon Drop 1: Kening -->
+                <div class="drop-zone" id="zone-brows" data-part-type="brows">
+                    <span class="zone-hint">KENING</span>
+                </div>
+
+                <!-- Zon Drop 2: Mata -->
+                <div class="drop-zone" id="zone-eyes" data-part-type="eyes">
+                    <span class="zone-hint">MATA</span>
+                </div>
+
+                <!-- Zon Drop 3: Mulut -->
+                <div class="drop-zone" id="zone-mouth" data-part-type="mouth">
+                    <span class="zone-hint">MULUT</span>
+                </div>
+            </div>
+
+            <!-- Dulang Pilihan Bahagian Wajah -->
+            <div class="parts-tray">
+                <!-- Kategori Kening -->
+                <div class="part-category">
+                    <span class="category-label">1. Pilih Kening</span>
+                    <div class="parts-row" id="tray-brows"></div>
+                </div>
+
+                <!-- Kategori Mata -->
+                <div class="part-category">
+                    <span class="category-label">2. Pilih Mata</span>
+                    <div class="parts-row" id="tray-eyes"></div>
+                </div>
+
+                <!-- Kategori Mulut -->
+                <div class="part-category">
+                    <span class="category-label">3. Pilih Mulut</span>
+                    <div class="parts-row" id="tray-mouth"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-footer">
+            <button class="btn-cartoon btn-reset" onclick="clearFace()">
+                🔄 Kosongkan
+            </button>
+            <button class="btn-cartoon btn-done" onclick="checkExpression()">
+                ✅ SIAP
+            </button>
+        </div>
+    </section>
+
+    <!-- ==================== MODAL 1: PENGESAHAN EMOSI ==================== -->
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal-box">
+            <!-- Ikon Bubu Bertanya -->
+            <svg width="100" height="100" viewBox="0 0 200 200">
+                <circle cx="100" cy="105" r="75" fill="#CDB4DB" stroke="#9D79B3" stroke-width="6"/>
+                <circle cx="42" cy="48" r="22" fill="#CDB4DB" stroke="#9D79B3" stroke-width="6"/>
+                <circle cx="158" cy="48" r="22" fill="#CDB4DB" stroke="#9D79B3" stroke-width="6"/>
+                <ellipse cx="100" cy="115" rx="56" ry="48" fill="#FFFDF7"/>
+                <circle cx="76" cy="98" r="8" fill="#3D3B40"/>
+                <circle cx="124" cy="98" r="8" fill="#3D3B40"/>
+                <path d="M 90 122 Q 100 130 110 122" fill="none" stroke="#3D3B40" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+
+            <h2 id="question-text" style="margin: 0; line-height: 1.35;">
+                Adakah kamu sedang berasa <span class="emotion-highlight" id="detected-emotion-label">GEMBIRA</span>?
+            </h2>
+
+            <div class="modal-buttons">
+                <button class="btn-cartoon btn-yes" onclick="confirmEmotionYes()">
+                    👍 YA, BETUL
+                </button>
+                <button class="btn-cartoon btn-no" onclick="confirmEmotionNo()">
+                    🔄 BUKAN, CUBA LAGI
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 2: MESEJ MESRA BUBU ==================== -->
+    <div id="modal-bubu" class="modal-overlay">
+        <div class="modal-box" style="border-color: var(--pastel-green-dark); box-shadow: 0 12px 0 var(--pastel-green-dark);">
+            <!-- Bubu Peluk / Ceria -->
+            <svg width="120" height="120" viewBox="0 0 200 200">
+                <circle cx="100" cy="105" r="75" fill="#B9FBC0" stroke="#58D66C" stroke-width="6"/>
+                <circle cx="42" cy="48" r="22" fill="#B9FBC0" stroke="#58D66C" stroke-width="6"/>
+                <circle cx="158" cy="48" r="22" fill="#B9FBC0" stroke="#58D66C" stroke-width="6"/>
+                <ellipse cx="100" cy="115" rx="56" ry="48" fill="#FFFDF7"/>
+                <!-- Mata senyum melengkung -->
+                <path d="M 66 100 Q 76 88 86 100" fill="none" stroke="#3D3B40" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 114 100 Q 124 88 134 100" fill="none" stroke="#3D3B40" stroke-width="5" stroke-linecap="round"/>
+                <ellipse cx="62" cy="114" rx="10" ry="6" fill="#FFAFCC"/>
+                <ellipse cx="138" cy="114" rx="10" ry="6" fill="#FFAFCC"/>
+                <path d="M 82 116 Q 100 138 118 116" fill="none" stroke="#3D3B40" stroke-width="5" stroke-linecap="round"/>
+                <!-- Hati kecil -->
+                <path d="M 100 45 C 100 35, 85 35, 85 47 C 85 57, 100 65, 100 65 C 100 65, 115 57, 115 47 C 115 35, 100 35, 100 45 Z" fill="#FF6B6B"/>
+            </svg>
+
+            <p class="bubu-comfort-msg" id="bubu-final-message">
+                Terima kasih kerana berkongsi perasaan dengan Bubu. Bubu ada bersama kamu.
+            </p>
+
+            <button class="btn-cartoon btn-start" style="font-size: 1.4rem; padding: 14px 32px;" onclick="restartGame()">
+                🏠 MAIN SEMULA
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL NOTIFIKASI RINGKAS (GANTI ALERT) ==================== -->
+    <div id="modal-notice" class="modal-overlay">
+        <div class="modal-box" style="border-color: var(--pastel-yellow-dark); box-shadow: 0 10px 0 var(--pastel-yellow-dark);">
+            <h2 style="margin: 0; font-size: 1.6rem;">Jom lengkapkan muka dahulu!</h2>
+            <p style="font-size: 1.2rem; margin: 0; color: #555;">
+                Tarik <b>kening</b>, <b>mata</b>, dan <b>mulut</b> ke atas muka ya.
+            </p>
+            <button class="btn-cartoon btn-start" style="font-size: 1.3rem; padding: 12px 32px;" onclick="closeNotice()">
+                BAIKLAH!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. ASET GRAFIK SVG KARTUN (KENING, MATA, MULUT & KEPALA)
+           ========================================================================== */
+        
+        // Koleksi SVG untuk setiap bahagian mengikut 4 emosi utama
+        const PARTS_DATA = {
+            brows: [
+                {
+                    id: 'brows-happy',
+                    emotion: 'GEMBIRA',
+                    svg: `<svg viewBox="0 0 160 40">
+                            <path d="M 22 26 Q 42 12 62 24" fill="none" stroke="#4A3525" stroke-width="6" stroke-linecap="round"/>
+                            <path d="M 98 24 Q 118 12 138 26" fill="none" stroke="#4A3525" stroke-width="6" stroke-linecap="round"/>
+                          </svg>`
+                },
+                {
+                    id: 'brows-sad',
+                    emotion: 'SEDIH',
+                    svg: `<svg viewBox="0 0 160 40">
+                            <path d="M 22 18 Q 42 24 62 30" fill="none" stroke="#4A3525" stroke-width="6" stroke-linecap="round"/>
+                            <path d="M 98 30 Q 118 24 138 18" fill="none" stroke="#4A3525" stroke-width="6" stroke-linecap="round"/>
+                          </svg>`
+                },
+                {
+                    id: 'brows-angry',
+                    emotion: 'MARAH',
+                    svg: `<svg viewBox="0 0 160 40">
+                            <path d="M 22 14 L 64 30" fill="none" stroke="#4A3525" stroke-width="7" stroke-linecap="round"/>
+                            <path d="M 138 14 L 96 30" fill="none" stroke="#4A3525" stroke-width="7" stroke-linecap="round"/>
+                          </svg>`
+                },
+                {
+                    id: 'brows-scared',
+                    emotion: 'TAKUT',
+                    svg: `<svg viewBox="0 0 160 40">
+                            <path d="M 20 26 Q 40 8 62 18" fill="none" stroke="#4A3525" stroke-width="6" stroke-linecap="round"/>
+                            <path d="M 98 18 Q 120 8 140 26" fill="none" stroke="#4A3525" stroke-width="6" stroke-linecap="round"/>
+                          </svg>`
+                }
+            ],
+            eyes: [
+                {
+                    id: 'eyes-happy',
+                    emotion: 'GEMBIRA',
+                    svg: `<svg viewBox="0 0 160 50">
+                            <!-- Mata ceria melengkung -->
+                            <path d="M 24 32 Q 42 12 60 32" fill="none" stroke="#3D3B40" stroke-width="6" stroke-linecap="round"/>
+                            <path d="M 100 32 Q 118 12 136 32" fill="none" stroke="#3D3B40" stroke-width="6" stroke-linecap="round"/>
+                            <circle cx="24" cy="38" r="6" fill="#FFAFCC" opacity="0.7"/>
+                            <circle cx="136" cy="38" r="6" fill="#FFAFCC" opacity="0.7"/>
+                          </svg>`
+                },
+                {
+                    id: 'eyes-sad',
+                    emotion: 'SEDIH',
+                    svg: `<svg viewBox="0 0 160 50">
+                            <!-- Mata berkaca & air mata -->
+                            <circle cx="42" cy="24" r="12" fill="#3D3B40"/>
+                            <circle cx="38" cy="20" r="4" fill="#FFF"/>
+                            <circle cx="118" cy="24" r="12" fill="#3D3B40"/>
+                            <circle cx="114" cy="20" r="4" fill="#FFF"/>
+                            <!-- Titisan air mata biru pastel -->
+                            <path d="M 24 32 C 24 32, 18 42, 24 46 C 30 42, 24 32, 24 32 Z" fill="#5FA8EB"/>
+                            <path d="M 136 32 C 136 32, 130 42, 136 46 C 142 42, 136 32, 136 32 Z" fill="#5FA8EB"/>
+                          </svg>`
+                },
+                {
+                    id: 'eyes-angry',
+                    emotion: 'MARAH',
+                    svg: `<svg viewBox="0 0 160 50">
+                            <!-- Mata tajam marah -->
+                            <circle cx="42" cy="26" r="11" fill="#3D3B40"/>
+                            <circle cx="40" cy="23" r="3" fill="#FFF"/>
+                            <path d="M 24 16 L 60 24" stroke="#FFE0BD" stroke-width="7"/>
+                            <circle cx="118" cy="26" r="11" fill="#3D3B40"/>
+                            <circle cx="116" cy="23" r="3" fill="#FFF"/>
+                            <path d="M 136 16 L 100 24" stroke="#FFE0BD" stroke-width="7"/>
+                          </svg>`
+                },
+                {
+                    id: 'eyes-scared',
+                    emotion: 'TAKUT',
+                    svg: `<svg viewBox="0 0 160 50">
+                            <!-- Mata bulat terbeliak -->
+                            <circle cx="42" cy="25" r="16" fill="#FFF" stroke="#3D3B40" stroke-width="4"/>
+                            <circle cx="42" cy="25" r="6" fill="#3D3B40"/>
+                            <circle cx="118" cy="25" r="16" fill="#FFF" stroke="#3D3B40" stroke-width="4"/>
+                            <circle cx="118" cy="25" r="6" fill="#3D3B40"/>
+                          </svg>`
+                }
+            ],
+            mouth: [
+                {
+                    id: 'mouth-happy',
+                    emotion: 'GEMBIRA',
+                    svg: `<svg viewBox="0 0 120 55">
+                            <path d="M 25 16 Q 60 52 95 16 Z" fill="#FF6B6B" stroke="#3D3B40" stroke-width="4" stroke-linejoin="round"/>
+                            <path d="M 42 32 Q 60 44 78 32" fill="#FF9E9E"/>
+                          </svg>`
+                },
+                {
+                    id: 'mouth-sad',
+                    emotion: 'SEDIH',
+                    svg: `<svg viewBox="0 0 120 55">
+                            <path d="M 28 38 Q 60 14 92 38" fill="none" stroke="#3D3B40" stroke-width="6" stroke-linecap="round"/>
+                          </svg>`
+                },
+                {
+                    id: 'mouth-angry',
+                    emotion: 'MARAH',
+                    svg: `<svg viewBox="0 0 120 55">
+                            <path d="M 26 36 L 44 24 L 60 34 L 76 24 L 94 36" fill="none" stroke="#3D3B40" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>`
+                },
+                {
+                    id: 'mouth-scared',
+                    emotion: 'TAKUT',
+                    svg: `<svg viewBox="0 0 120 55">
+                            <ellipse cx="60" cy="28" rx="18" ry="20" fill="#3D3B40"/>
+                            <ellipse cx="60" cy="34" rx="10" ry="8" fill="#FF6B6B"/>
+                          </svg>`
+                }
+            ]
+        };
+
+        /* ==========================================================================
+           2. PEMBOLEH UBAH STATUS PERMAINAN
+           ========================================================================== */
+        let selectedGender = 'boy';
+        let placedParts = {
+            brows: null,
+            eyes: null,
+            mouth: null
+        };
+
+        // Sistem Audio Ringkas menggunakan Web Audio API (Tiada fail luar diperlukan)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playPopSound(freq = 520) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(freq * 1.35, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.12);
+            } catch (e) {
+                // Abaikan jika audio disekat pelayar
+            }
+        }
+
+        /* ==========================================================================
+           3. NAVIGASI SKRIN & RENDER KEPALA
+           ========================================================================== */
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goToGenderScreen() {
+            playPopSound(440);
+            showScreen('screen-gender');
+        }
+
+        function selectGender(gender) {
+            playPopSound(580);
+            selectedGender = gender;
+            renderBaseHead(gender);
+            clearFace();
+            showScreen('screen-game');
+        }
+
+        // Melukis kepala kosong dengan rambut, telinga dan hidung
+        function renderBaseHead(gender) {
+            const container = document.getElementById('base-head-container');
+            
+            const girlPigtails = gender === 'girl' ? `
+                <!-- Tocang Rambut Perempuan -->
+                <circle cx="42" cy="95" r="34" fill="#4A3525" stroke="#3D3B40" stroke-width="5"/>
+                <circle cx="258" cy="95" r="34" fill="#4A3525" stroke="#3D3B40" stroke-width="5"/>
+                <circle cx="65" cy="108" r="11" fill="#FFAFCC" stroke="#3D3B40" stroke-width="4"/>
+                <circle cx="235" cy="108" r="11" fill="#FFAFCC" stroke="#3D3B40" stroke-width="4"/>
+            ` : '';
+
+            const hairStyle = gender === 'boy' ? `
+                <!-- Rambut Lelaki -->
+                <path d="M 62 125 C 58 35, 242 35, 238 125 C 218 85, 180 95, 150 78 C 120 95, 82 85, 62 125 Z" 
+                      fill="#4A3525" stroke="#3D3B40" stroke-width="5" stroke-linejoin="round"/>
+            ` : `
+                <!-- Rambut Depan Perempuan -->
+                <path d="M 62 128 C 60 32, 240 32, 238 128 C 205 95, 175 102, 150 84 C 125 102, 95 95, 62 128 Z" 
+                      fill="#4A3525" stroke="#3D3B40" stroke-width="5" stroke-linejoin="round"/>
+            `;
+
+            container.innerHTML = `
+                <svg viewBox="0 0 300 320" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    ${girlPigtails}
+                    <!-- Telinga Kiri & Kanan -->
+                    <circle cx="56" cy="168" r="22" fill="#FFE0BD" stroke="#3D3B40" stroke-width="5"/>
+                    <circle cx="244" cy="168" r="22" fill="#FFE0BD" stroke="#3D3B40" stroke-width="5"/>
+                    
+                    <!-- Bentuk Muka Utama -->
+                    <rect x="65" y="55" width="170" height="225" rx="82" fill="#FFE0BD" stroke="#3D3B40" stroke-width="5"/>
+                    
+                    ${hairStyle}
+                    
+                    <!-- Hidung Comel di Tengah -->
+                    <path d="M 143 185 Q 150 194 157 185" fill="none" stroke="#D99B66" stroke-width="5" stroke-linecap="round"/>
+                </svg>
+            `;
+        }
+
+        /* ==========================================================================
+           4. INISIALISASI DULANG & SISTEM SENTUHAN DRAG-AND-DROP
+           ========================================================================== */
+        function initTray() {
+            ['brows', 'eyes', 'mouth'].forEach(type => {
+                const row = document.getElementById(`tray-${type}`);
+                row.innerHTML = '';
+
+                PARTS_DATA[type].forEach(part => {
+                    const item = document.createElement('div');
+                    item.className = 'draggable-item';
+                    item.dataset.partType = type;
+                    item.dataset.partId = part.id;
+                    item.dataset.emotion = part.emotion;
+                    item.innerHTML = part.svg;
+
+                    // Sokongan Pointer Events (Berfungsi serentak untuk sentuhan jari & tetikus)
+                    item.addEventListener('pointerdown', handleDragStart);
+                    
+                    // Juga sokong ketikan terus (tap) bagi kanak-kanak kecil yang sukar menyeret
+                    item.addEventListener('click', () => {
+                        placePartInZone(type, part);
+                    });
+
+                    row.appendChild(item);
+                });
+            });
+        }
+
+        let activeClone = null;
+        let draggedData = null;
+
+        function handleDragStart(e) {
+            e.preventDefault();
+            const item = e.currentTarget;
+            const type = item.dataset.partType;
+            const id = item.dataset.partId;
+            const partObj = PARTS_DATA[type].find(p => p.id === id);
+
+            draggedData = { type, partObj };
+
+            // Cipta klon visual yang mengikut jari/tetikus
+            activeClone = document.createElement('div');
+            activeClone.className = 'dragging-clone';
+            activeClone.style.width = type === 'mouth' ? '110px' : '150px';
+            activeClone.style.height = '55px';
+            activeClone.innerHTML = partObj.svg;
+            document.body.appendChild(activeClone);
+
+            updateClonePosition(e.clientX, e.clientY);
+
+            window.addEventListener('pointermove', handleDragMove);
+            window.addEventListener('pointerup', handleDragEnd);
+        }
+
+        function handleDragMove(e) {
+            if (!activeClone) return;
+            updateClonePosition(e.clientX, e.clientY);
+
+            // Kesan jika berada di atas zon yang betul
+            const targetZone = document.getElementById(`zone-${draggedData.type}`);
+            const rect = targetZone.getBoundingClientRect();
+
+            // Tambah margin toleransi supaya mudah dilepaskan oleh kanak-kanak
+            const margin = 25;
+            const isOver = (
+                e.clientX >= rect.left - margin &&
+                e.clientX <= rect.right + margin &&
+                e.clientY >= rect.top - margin &&
+                e.clientY <= rect.bottom + margin
+            );
+
+            if (isOver) {
+                targetZone.classList.add('highlight');
+            } else {
+                targetZone.classList.remove('highlight');
+            }
+        }
+
+        function handleDragEnd(e) {
+            window.removeEventListener('pointermove', handleDragMove);
+            window.removeEventListener('pointerup', handleDragEnd);
+
+            if (!activeClone || !draggedData) return;
+
+            const targetZone = document.getElementById(`zone-${draggedData.type}`);
+            const rect = targetZone.getBoundingClientRect();
+            const margin = 35;
+
+            const isDroppedInside = (
+                e.clientX >= rect.left - margin &&
+                e.clientX <= rect.right + margin &&
+                e.clientY >= rect.top - margin &&
+                e.clientY <= rect.bottom + margin
+            );
+
+            if (isDroppedInside) {
+                placePartInZone(draggedData.type, draggedData.partObj);
+            }
+
+            targetZone.classList.remove('highlight');
+            activeClone.remove();
+            activeClone = null;
+            draggedData = null;
+        }
+
+        function updateClonePosition(x, y) {
+            if (activeClone) {
+                activeClone.style.left = `${x}px`;
+                activeClone.style.top = `${y}px`;
+            }
+        }
+
+        // Meletakkan bahagian wajah ke dalam zon muka
+        function placePartInZone(type, partObj) {
+            playPopSound(640);
+            placedParts[type] = partObj;
+
+            const zone = document.getElementById(`zone-${type}`);
+            zone.classList.add('filled');
+
+            // Kekalkan hint tersembunyi dan masukkan elemen SVG bahagian wajah
+            const hintText = type === 'brows' ? 'KENING' : (type === 'eyes' ? 'MATA' : 'MULUT');
+            zone.innerHTML = `
+                <span class="zone-hint">${hintText}</span>
+                <div class="placed-part" title="Ketik untuk buang">${partObj.svg}</div>
+            `;
+
+            // Benarkan kanak-kanak mengetik bahagian di muka untuk membuangnya jika mahu
+            zone.querySelector('.placed-part').addEventListener('click', () => {
+                removePartFromZone(type);
+            });
+        }
+
+        function removePartFromZone(type) {
+            playPopSound(360);
+            placedParts[type] = null;
+            const zone = document.getElementById(`zone-${type}`);
+            zone.classList.remove('filled');
+            const hintText = type === 'brows' ? 'KENING' : (type === 'eyes' ? 'MATA' : 'MULUT');
+            zone.innerHTML = `<span class="zone-hint">${hintText}</span>`;
+        }
+
+        function clearFace() {
+            playPopSound(380);
+            ['brows', 'eyes', 'mouth'].forEach(type => removePartFromZone(type));
+        }
+
+        /* ==========================================================================
+           5. PENGECAMAN EKSPRESI & DIALOG EMPATI BUBU
+           ========================================================================== */
+        function checkExpression() {
+            // Pastikan sekurang-kurangnya ketiga-tiga bahagian telah diletakkan
+            if (!placedParts.brows || !placedParts.eyes || !placedParts.mouth) {
+                playPopSound(300);
+                document.getElementById('modal-notice').classList.add('active');
+                return;
+            }
+
+            playPopSound(720);
+
+            // Kira skor emosi berdasarkan bahagian yang dipilih oleh kanak-kanak
+            // Mulut dan mata diberi pemberat sedikit tinggi kerana paling ketara menunjukkan emosi
+            const scores = {
+                'GEMBIRA': 0,
+                'SEDIH': 0,
+                'MARAH': 0,
+                'TAKUT': 0
+            };
+
+            scores[placedParts.brows.emotion] += 1;
+            scores[placedParts.eyes.emotion] += 1.2;
+            scores[placedParts.mouth.emotion] += 1.5;
+
+            // Cari emosi dengan skor tertinggi
+            let detectedEmotion = 'GEMBIRA';
+            let maxScore = -1;
+
+            for (const [emotion, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    detectedEmotion = emotion;
+                }
+            }
+
+            // Paparkan soalan pengesahan tanpa memaksa
+            document.getElementById('detected-emotion-label').textContent = detectedEmotion;
+            document.getElementById('modal-confirm').classList.add('active');
+        }
+
+        function closeNotice() {
+            playPopSound(500);
+            document.getElementById('modal-notice').classList.remove('active');
+        }
+
+        function confirmEmotionYes() {
+            playPopSound(800);
+            document.getElementById('modal-confirm').classList.remove('active');
+            document.getElementById('modal-bubu').classList.add('active');
+        }
+
+        function confirmEmotionNo() {
+            playPopSound(420);
+            // Tutup modal dan benarkan kanak-kanak mengubah suai semula wajah mengikut perasaan sebenar mereka
+            document.getElementById('modal-confirm').classList.remove('active');
+        }
+
+        function restartGame() {
+            playPopSound(520);
+            document.getElementById('modal-bubu').classList.remove('active');
+            clearFace();
+            showScreen('screen-start');
+        }
+
+        // Mulakan dulang apabila halaman dimuatkan
+        window.addEventListener('DOMContentLoaded', () => {
+            initTray();
+        });
+    </script>
+</body>
+</html>
